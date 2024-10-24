@@ -45,7 +45,7 @@ async def user(user: User):
     return User(**new_user)
 
 
-@router.put("/")
+@router.put("/",response_model=User)
 async def user(user: User):
     found = False
     for index, saved_users in enumerate(users_list):
@@ -57,13 +57,9 @@ async def user(user: User):
     else:
         return user
 
-@router.delete("/{id}")
-async def user(id:int):
-        found=False
-        for index, saved_users in enumerate(users_list):
-            if saved_users.id == id :
-                del users_list[index]
-                found=True
+@router.delete("/{id}",status_code=204)
+async def user(id:str):
+        found = db_client.local.users.find_one_and_delete({"_id": ObjectId(id)})
 
         if not found:
             raise HTTPException(status_code=404,detail="el usuario no se elimino")
