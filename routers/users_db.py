@@ -47,15 +47,15 @@ async def user(user: User):
 
 @router.put("/",response_model=User)
 async def user(user: User):
-    found = False
-    for index, saved_users in enumerate(users_list):
-        if saved_users.id == user.id :
-            users_list[index]= user
-            found = True
-    if found == False:
-        raise HTTPException(status_code=204,detail="el usuario no se modifico")
-    else:
-        return user
+    user_dict = dict(user)
+    del user_dict["id"]
+    try:
+        db_client.local.users.find_one_and_replace({"_id": ObjectId(user.id)}, user_dict)
+
+    except: 
+            raise HTTPException(status_code=404,detail="el usuario no se modifico")
+
+    return search_user("_id", ObjectId(user.id))
 
 @router.delete("/{id}",status_code=204)
 async def user(id:str):
