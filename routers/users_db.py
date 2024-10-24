@@ -3,7 +3,7 @@ from db.models.user import User
 from db.client import db_client
 from db.schemas.user import user_schema
 
-router= APIRouter(prefix="/usersdb",
+router= APIRouter(prefix="/userdb",
                     tags=["usersdb"],
                     responses={404: {"message": "no encontrado"}})
 
@@ -39,11 +39,11 @@ async def user(user: User):
     user_dict = dict(user)
     del user_dict["id"]
 
-    id = db_client.local.users.insert_one(user_dict).inserted_id
+    id = user_schema(db_client.local.users.insert_one(user_dict).inserted_id)
 
     new_user = db_client.local.users.find_one({"_id": id})
 
-    return user
+    return User(**new_user)
 
 @router.put("/")
 async def user(user: User):
