@@ -6,4 +6,4 @@ from pymongo import MongoClient
 
 #bd remota
 db_client = MongoClient(
-    "mongodb+srv://admin:<contraseña>@cluster0.cshdu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").test
+    "mongodb+srv://admin:<tucontraseña>@cluster0.cshdu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").test
