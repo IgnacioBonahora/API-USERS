@@ -17,7 +17,7 @@ users_list =[]
 
 @router.get("/", response_model=list[User])
 async def users():
-    return users_schema(db_client.local.users.find())
+    return users_schema(db_client.users.find())
 
 
 #path
@@ -39,8 +39,8 @@ async def user(user: User):
     user_dict = dict(user)
     del user_dict["id"]  # Asegúrate de que este campo no esté en el diccionario
 
-    id = db_client.local.users.insert_one(user_dict).inserted_id
-    new_user = user_schema(db_client.local.users.find_one({"_id": id}))
+    id = db_client.users.insert_one(user_dict).inserted_id
+    new_user = user_schema(db_client.users.find_one({"_id": id}))
 
     return User(**new_user)
 
@@ -50,7 +50,7 @@ async def user(user: User):
     user_dict = dict(user)
     del user_dict["id"]
     try:
-        db_client.local.users.find_one_and_replace({"_id": ObjectId(user.id)}, user_dict)
+        db_client.users.find_one_and_replace({"_id": ObjectId(user.id)}, user_dict)
 
     except: 
             raise HTTPException(status_code=404,detail="el usuario no se modifico")
@@ -59,7 +59,7 @@ async def user(user: User):
 
 @router.delete("/{id}",status_code=204)
 async def user(id:str):
-        found = db_client.local.users.find_one_and_delete({"_id": ObjectId(id)})
+        found = db_client.users.find_one_and_delete({"_id": ObjectId(id)})
 
         if not found:
             raise HTTPException(status_code=404,detail="el usuario no se elimino")
@@ -69,7 +69,7 @@ async def user(id:str):
 
 
 def search_user(field: str, key):
-    user = db_client.local.users.find_one({field: key})
+    user = db_client.users.find_one({field: key})
     if user:
         return user_schema(user)  # Devuelve el esquema del usuario si existe
     return None  # Devuelve None si no se encontró el usuario
